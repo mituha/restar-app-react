@@ -23,7 +23,9 @@ export default defineConfig({
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-markdown',
-        'lucide-react'
+        'lucide-react',
+        '@gitgraph/js',
+        '@gitgraph/react'
       ],
       output: [
         {
@@ -40,7 +42,9 @@ export default defineConfig({
             'react-dom': 'ReactDOM',
             'react/jsx-runtime': 'jsxRuntime',
             'react/jsx-dev-runtime': 'jsxDevRuntime',
-            'lucide-react': 'Lucide'
+            'lucide-react': 'Lucide',
+            '@gitgraph/js': 'gitgraphJs',
+            '@gitgraph/react': 'gitgraphReact'
           }
         }
       ]

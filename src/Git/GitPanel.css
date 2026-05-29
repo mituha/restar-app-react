@@ -1,0 +1,304 @@
+/* Git UI Root variables with theme fallbacks */
+.git-ui-root {
+  --git-ui-bg: var(--git-theme-bg, #1e1e1e);
+  --git-ui-text-primary: var(--git-theme-text-primary, #f5f5f5);
+  --git-ui-text-secondary: var(--git-theme-text-secondary, #aaaaaa);
+  --git-ui-border: var(--git-theme-border, #333333);
+  --git-ui-input-bg: var(--git-theme-input-bg, #252526);
+  --git-ui-input-border: var(--git-theme-input-border, #3c3c3c);
+  --git-ui-button-bg: var(--git-theme-button-bg, #0e639c);
+  --git-ui-button-hover-bg: var(--git-theme-button-hover-bg, #1177bb);
+  --git-ui-accent: var(--git-theme-accent, #007acc);
+  --git-ui-item-hover: var(--git-theme-item-hover, #2a2d2e);
+
+  /* Status colors matching VSCode */
+  --git-ui-color-added: var(--git-theme-color-added, #73c991);
+  --git-ui-color-modified: var(--git-theme-color-modified, #e2c08d);
+  --git-ui-color-deleted: var(--git-theme-color-deleted, #c74e39);
+  --git-ui-color-untracked: var(--git-theme-color-untracked, #73c991);
+  --git-ui-color-renamed: var(--git-theme-color-renamed, #3bb6c4);
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--git-ui-bg);
+  color: var(--git-ui-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  user-select: none;
+}
+
+.git-panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.git-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--git-ui-border);
+}
+
+.git-panel-title {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--git-ui-text-secondary);
+}
+
+.git-panel-refresh-btn, .git-panel-iconBtn {
+  background: none;
+  border: none;
+  color: var(--git-ui-text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.git-panel-refresh-btn:hover, .git-panel-iconBtn:hover {
+  background-color: var(--git-ui-item-hover);
+  color: var(--git-ui-text-primary);
+}
+
+/* Commit Input Area */
+.git-panel-section.commit-section {
+  padding: 12px;
+  border-bottom: 1px solid var(--git-ui-border);
+}
+
+.git-panel-commitInput {
+  width: 100%;
+  background-color: var(--git-ui-input-bg);
+  border: 1px solid var(--git-ui-input-border);
+  color: var(--git-ui-text-primary);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.git-panel-commitInput:focus {
+  border-color: var(--git-ui-accent);
+}
+
+.git-panel-commitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--git-ui-button-bg);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.git-panel-commitBtn:hover:not(:disabled) {
+  background-color: var(--git-ui-button-hover-bg);
+}
+
+.git-panel-commitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.git-panel-initBtn {
+  background-color: transparent;
+  color: var(--git-ui-accent);
+  border: 1px solid var(--git-ui-accent);
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.git-panel-initBtn:hover {
+  background-color: rgba(0, 122, 204, 0.1);
+}
+
+/* Sections for staged / changes */
+.git-panel-section-header {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.02);
+  transition: background-color 0.2s;
+}
+
+.git-panel-section-header:hover {
+  background-color: var(--git-ui-item-hover);
+}
+
+.git-panel-section-title {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+  margin-left: 4px;
+}
+
+.git-panel-section-count {
+  font-size: 11px;
+  background-color: var(--git-ui-border);
+  color: var(--git-ui-text-secondary);
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-right: 6px;
+  min-width: 12px;
+  text-align: center;
+}
+
+.git-panel-section-actions {
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.git-panel-section-header:hover .git-panel-section-actions {
+  opacity: 1;
+}
+
+.git-panel-fileList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.git-panel-fileItem {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px 6px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.git-panel-fileItem:hover {
+  background-color: var(--git-ui-item-hover);
+}
+
+.git-panel-path {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.git-panel-status {
+  font-weight: bold;
+  font-size: 11px;
+  width: 16px;
+  text-align: center;
+  margin-right: 8px;
+  border-radius: 3px;
+}
+
+.status-A { color: var(--git-ui-color-added); }
+.status-M { color: var(--git-ui-color-modified); }
+.status-D { color: var(--git-ui-color-deleted); }
+.status-U { color: var(--git-ui-color-untracked); }
+.status-R { color: var(--git-ui-color-renamed); }
+
+/* Hover actions on items */
+.git-panel-item-actions {
+  display: none;
+  gap: 4px;
+}
+
+.git-panel-fileItem:hover .git-panel-item-actions {
+  display: flex;
+}
+
+.git-panel-fileItem:hover .git-panel-status {
+  display: none; /* Hide status label to fit actions on hover */
+}
+
+/* History styling */
+.git-panel-historyList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.git-panel-historyItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--git-ui-border);
+  transition: background-color 0.2s;
+}
+
+.git-panel-historyItem:hover {
+  background-color: var(--git-ui-item-hover);
+}
+
+.git-panel-historyContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.git-panel-historyMessage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.git-panel-message-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.git-panel-historyMeta {
+  font-size: 11px;
+  color: var(--git-ui-text-secondary);
+}
+
+.git-panel-badges {
+  display: flex;
+  gap: 4px;
+}
+
+.git-panel-empty {
+  padding: 12px 24px;
+  color: var(--git-ui-text-secondary);
+  font-style: italic;
+  font-size: 12px;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

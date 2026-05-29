@@ -1,6 +1,6 @@
 {
   "name": "restar-app",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "ReSTAR-App用汎用reactコンポーネント",
   "author": "Mizuki Mituha",
   "repository": {
@@ -30,12 +30,13 @@
     },
     "./index.css": "./dist/index.css"
   },
-  "dependencies": {
-    "lucide-react": "^1.14.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "@gitgraph/js": "^1.4.0",
+    "@gitgraph/react": "^1.6.0",
+    "lucide-react": "^1.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
