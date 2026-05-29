@@ -302,3 +302,10 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* Custom styling for embedded gitgraph SVG to avoid inner scrolling/overflow quirks */
+.git-ui-graph-wrapper svg {
+  display: block !important;
+  overflow: hidden !important;
+  width: 100% !important;
+}
