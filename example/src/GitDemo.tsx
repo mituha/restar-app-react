@@ -157,6 +157,15 @@ class MockGitClient implements GitClient {
     this.notify();
   }
 
+  async commitFiles(_dir: string, hash: string): Promise<GitFileStatus[]> {
+    // Simulate slight API loading delay
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    return [
+      { path: `src/components/Feature-${hash.substring(0, 4)}.tsx`, index: ' ', working_dir: 'M' },
+      { path: `docs/update-${hash.substring(0, 4)}.md`, index: ' ', working_dir: 'A' },
+    ];
+  }
+
   // Helper method for demo UI to inject random modifications
   generateRandomChange() {
     const paths = [
@@ -186,7 +195,7 @@ class MockGitClient implements GitClient {
 export const GitDemo: React.FC = () => {
   const [mockClient] = useState(() => new MockGitClient());
   const [currentDir, setCurrentDir] = useState<string | null>('d:/home/mituha/repos/novel-editor');
-  const [diffInfo, setDiffInfo] = useState<{ path: string; staged: boolean } | null>(null);
+  const [diffInfo, setDiffInfo] = useState<{ path: string; staged: boolean; commitHash?: string } | null>(null);
 
   // Subscribe context to mock state changes
   const subscribeFileChange = (onChanged: () => void) => {
@@ -196,8 +205,8 @@ export const GitDemo: React.FC = () => {
     };
   };
 
-  const handleOpenFileDiff = (path: string, staged: boolean) => {
-    setDiffInfo({ path, staged });
+  const handleOpenFileDiff = (path: string, staged: boolean, commitHash?: string) => {
+    setDiffInfo({ path, staged, commitHash });
   };
 
   return (
@@ -294,13 +303,27 @@ export const GitDemo: React.FC = () => {
               実際のDiffビューアはホスト側（または専用ライブラリ）に委譲されます。
             </p>
             <div style={{ backgroundColor: '#1a1a1a', padding: '16px', borderRadius: '4px', fontFamily: 'monospace', fontSize: '12px', color: '#73c991' }}>
-              diff --git a/{diffInfo.path} b/{diffInfo.path} <br />
-              --- a/{diffInfo.path} <br />
-              +++ b/{diffInfo.path} <br />
-              @@ -1,4 +1,5 @@ <br />
-              - // Old content <br />
-              + // New modification simulated <br />
-              + // Staged status: {diffInfo.staged ? 'Staged' : 'Modified'}
+              {diffInfo.commitHash ? (
+                <>
+                  <span style={{ color: '#007acc' }}>// Commited changes in commit: {diffInfo.commitHash}</span><br />
+                  diff --git a/{diffInfo.path} b/{diffInfo.path} <br />
+                  --- a/{diffInfo.path} (at commit {diffInfo.commitHash})<br />
+                  +++ b/{diffInfo.path} <br />
+                  @@ -1,3 +1,3 @@ <br />
+                  - // Original state before commit <br />
+                  + // Committed modification visualizer
+                </>
+              ) : (
+                <>
+                  diff --git a/{diffInfo.path} b/{diffInfo.path} <br />
+                  --- a/{diffInfo.path} <br />
+                  +++ b/{diffInfo.path} <br />
+                  @@ -1,4 +1,5 @@ <br />
+                  - // Old content <br />
+                  + // New modification simulated <br />
+                  + // Staged status: {diffInfo.staged ? 'Staged' : 'Modified'}
+                </>
+              )}
             </div>
           </div>
         ) : (

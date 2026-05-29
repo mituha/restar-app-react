@@ -15,6 +15,7 @@ interface GitContextType {
   commitChanges: (message: string) => Promise<void>;
   discardFile: (path: string) => Promise<void>;
   pushChanges: (remote: string) => Promise<void>;
+  commitFiles: (hash: string) => Promise<GitFileStatus[]>;
 }
 
 const GitContext = createContext<GitContextType | undefined>(undefined);
@@ -115,6 +116,16 @@ export const GitProvider: React.FC<GitProviderProps> = ({
     await refreshStatus();
   }, [client, currentDir, currentBranch, refreshStatus]);
 
+  const commitFiles = useCallback(async (hash: string) => {
+    if (!currentDir) return [];
+    try {
+      return await client.commitFiles(currentDir, hash);
+    } catch (error) {
+      console.error('Failed to get commit files:', error);
+      return [];
+    }
+  }, [client, currentDir]);
+
   // Handle file changes subscription
   useEffect(() => {
     if (!currentDir || !subscribeFileChange) return;
@@ -157,6 +168,7 @@ export const GitProvider: React.FC<GitProviderProps> = ({
         commitChanges,
         discardFile,
         pushChanges,
+        commitFiles,
       }}
     >
       {children}

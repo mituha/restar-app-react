@@ -14,11 +14,11 @@ import {
 import { useGit } from './GitContext';
 import { GitGraph } from './GitGraph';
 import { defaultLocale } from './types';
-import type { GitUILocale } from './types';
+import type { GitUILocale, GitFileStatus } from './types';
 import './GitPanel.css';
 
 interface GitPanelProps {
-  onOpenFileDiff: (path: string, staged: boolean) => void;
+  onOpenFileDiff: (path: string, staged: boolean, commitHash?: string) => void;
   locale?: GitUILocale;
 }
 
@@ -53,6 +53,30 @@ export const GitPanel: React.FC<GitPanelProps> = ({
     changes: true,
     history: true,
   });
+
+  const { commitFiles } = useGit();
+  const [selectedCommitHash, setSelectedCommitHash] = useState<string | null>(null);
+  const [commitFilesMap, setCommitFilesMap] = useState<Record<string, GitFileStatus[]>>({});
+  const [loadingCommits, setLoadingCommits] = useState<Record<string, boolean>>({});
+
+  const handleCommitClick = async (hash: string) => {
+    if (selectedCommitHash === hash) {
+      setSelectedCommitHash(null);
+      return;
+    }
+    setSelectedCommitHash(hash);
+    if (!commitFilesMap[hash] && !loadingCommits[hash]) {
+      setLoadingCommits(prev => ({ ...prev, [hash]: true }));
+      try {
+        const files = await commitFiles(hash);
+        setCommitFilesMap(prev => ({ ...prev, [hash]: files }));
+      } catch (err) {
+        console.error('Failed to load commit files', err);
+      } finally {
+        setLoadingCommits(prev => ({ ...prev, [hash]: false }));
+      }
+    }
+  };
 
   useEffect(() => {
     if (remotes.length > 0 && !remotes.includes(selectedRemote)) {
@@ -383,57 +407,105 @@ export const GitPanel: React.FC<GitPanelProps> = ({
 
               {/* Text list of commits */}
               <ul className="git-panel-historyList">
-                {history.map((entry) => (
-                  <li key={entry.hash} className="git-panel-historyItem">
-                    <div className="git-panel-historyContent">
-                      <div className="git-panel-historyMessage">
-                        <span className="git-panel-message-text" title={entry.message}>
-                          {entry.message}
-                        </span>
-                        {entry.refs && (
-                          <span className="git-panel-badges">
-                            {entry.refs.split(', ').map((ref: string) => {
-                              const cleanRef = ref.trim();
-                              let color = '#2e7d32'; // Local branch
-                              if (cleanRef.includes('HEAD ->')) {
-                                color = '#00838f'; // Current branch
-                              } else if (cleanRef.includes('/') || cleanRef.includes('origin/')) {
-                                color = '#1565c0'; // Remote branch
-                              } else if (cleanRef === 'HEAD') {
-                                color = '#ef6c00'; // Detached HEAD
-                              } else if (cleanRef.startsWith('tag: ')) {
-                                color = '#7b1fa2'; // Tag
-                              }
+                {history.map((entry) => {
+                  const isSelected = selectedCommitHash === entry.hash;
+                  const commitFilesList = commitFilesMap[entry.hash] || [];
+                  const isLoading = loadingCommits[entry.hash];
 
-                              return (
-                                <span
-                                  key={cleanRef}
-                                  style={{
-                                    fontSize: '9px',
-                                    padding: '1px 3px',
-                                    borderRadius: '3px',
-                                    backgroundColor: color,
-                                    color: 'white',
-                                    whiteSpace: 'nowrap',
-                                    maxWidth: '80px',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                  }}
-                                  title={cleanRef}
+                  return (
+                    <li
+                      key={entry.hash}
+                      className={`git-panel-historyItem-container ${isSelected ? 'selected' : ''}`}
+                      style={{ borderBottom: '1px solid var(--git-ui-border)', display: 'flex', flexDirection: 'column' }}
+                    >
+                      <div
+                        className="git-panel-historyItem"
+                        onClick={() => handleCommitClick(entry.hash)}
+                        style={{ display: 'flex', padding: '8px 12px', cursor: 'pointer', minWidth: 0, width: '100%', boxSizing: 'border-box' }}
+                      >
+                        <div className="git-panel-historyContent">
+                          <div className="git-panel-historyMessage">
+                            <span className="git-panel-message-text" title={entry.message}>
+                              {entry.message}
+                            </span>
+                            {entry.refs && (
+                              <span className="git-panel-badges">
+                                {entry.refs.split(', ').map((ref: string) => {
+                                  const cleanRef = ref.trim();
+                                  let color = '#2e7d32'; // Local branch
+                                  if (cleanRef.includes('HEAD ->')) {
+                                    color = '#00838f'; // Current branch
+                                  } else if (cleanRef.includes('/') || cleanRef.includes('origin/')) {
+                                    color = '#1565c0'; // Remote branch
+                                  } else if (cleanRef === 'HEAD') {
+                                    color = '#ef6c00'; // Detached HEAD
+                                  } else if (cleanRef.startsWith('tag: ')) {
+                                    color = '#7b1fa2'; // Tag
+                                  }
+
+                                  return (
+                                    <span
+                                      key={cleanRef}
+                                      style={{
+                                        fontSize: '9px',
+                                        padding: '1px 3px',
+                                        borderRadius: '3px',
+                                        backgroundColor: color,
+                                        color: 'white',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '80px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                      }}
+                                      title={cleanRef}
+                                    >
+                                      {cleanRef.replace('HEAD ->', '')}
+                                    </span>
+                                  );
+                                })}
+                              </span>
+                            )}
+                          </div>
+                          <div className="git-panel-historyMeta">
+                            {entry.author_name} • {new Date(entry.date).toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expanded Files List */}
+                      {isSelected && (
+                        <div style={{ backgroundColor: 'rgba(0,0,0,0.15)', padding: '4px 0 8px 0' }}>
+                          {isLoading ? (
+                            <div className="git-panel-empty" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <RefreshCw size={12} className="spin" />
+                              読み込み中...
+                            </div>
+                          ) : commitFilesList.length === 0 ? (
+                            <div className="git-panel-empty">変更ファイルはありません</div>
+                          ) : (
+                            <ul className="git-panel-fileList" style={{ margin: 0, padding: 0 }}>
+                              {commitFilesList.map((file) => (
+                                <li
+                                  key={file.path}
+                                  className="git-panel-fileItem"
+                                  style={{ paddingLeft: '32px' }}
+                                  onClick={() => onOpenFileDiff(file.path, false, entry.hash)}
                                 >
-                                  {cleanRef.replace('HEAD ->', '')}
-                                </span>
-                              );
-                            })}
-                          </span>
-                        )}
-                      </div>
-                      <div className="git-panel-historyMeta">
-                        {entry.author_name} • {new Date(entry.date).toLocaleString()}
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                                  <span className={`git-panel-status status-${getStatusLabel(file)}`}>
+                                    {getStatusLabel(file)}
+                                  </span>
+                                  <span className="git-panel-path" title={file.path}>
+                                    {file.path}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}

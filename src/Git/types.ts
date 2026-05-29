@@ -35,6 +35,7 @@ export interface GitClient {
   getRemotes(dir: string): Promise<string[]>;
   currentBranch(dir: string): Promise<string>;
   push(dir: string, remote: string, branch: string): Promise<void>;
+  commitFiles(dir: string, hash: string): Promise<GitFileStatus[]>;
 }
 
 /**

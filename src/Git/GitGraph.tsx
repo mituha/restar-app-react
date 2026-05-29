@@ -30,9 +30,10 @@ export const GitGraph: React.FC<GitGraphProps> = ({ history }) => {
 
   // To build the graph from past to present, we reverse the history
   const commits = [...history].reverse();
+  const computedHeight = commits.length * 40;
 
   return (
-    <div className="git-ui-graph-wrapper" style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+    <div className="git-ui-graph-wrapper" style={{ overflowX: 'auto', overflowY: 'hidden', height: `${computedHeight}px`, minHeight: '80px' }}>
       <Gitgraph options={{ template: customTemplate, orientation: 'vertical-reverse' as any }}>
         {(gitgraph) => {
           // Maps commit hash to the branch object it belongs to
