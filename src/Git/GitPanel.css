@@ -18,6 +18,9 @@
   --git-ui-color-untracked: var(--git-theme-color-untracked, #73c991);
   --git-ui-color-renamed: var(--git-theme-color-renamed, #3bb6c4);
 
+  /* Graph layout customization */
+  --git-ui-graph-padding-left: var(--git-theme-graph-padding-left, 10px);
+
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -51,7 +54,8 @@
   color: var(--git-ui-text-secondary);
 }
 
-.git-panel-refresh-btn, .git-panel-iconBtn {
+.git-panel-refresh-btn,
+.git-panel-iconBtn {
   background: none;
   border: none;
   color: var(--git-ui-text-secondary);
@@ -64,7 +68,8 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-.git-panel-refresh-btn:hover, .git-panel-iconBtn:hover {
+.git-panel-refresh-btn:hover,
+.git-panel-iconBtn:hover {
   background-color: var(--git-ui-item-hover);
   color: var(--git-ui-text-primary);
 }
@@ -217,11 +222,25 @@
   border-radius: 3px;
 }
 
-.status-A { color: var(--git-ui-color-added); }
-.status-M { color: var(--git-ui-color-modified); }
-.status-D { color: var(--git-ui-color-deleted); }
-.status-U { color: var(--git-ui-color-untracked); }
-.status-R { color: var(--git-ui-color-renamed); }
+.status-A {
+  color: var(--git-ui-color-added);
+}
+
+.status-M {
+  color: var(--git-ui-color-modified);
+}
+
+.status-D {
+  color: var(--git-ui-color-deleted);
+}
+
+.status-U {
+  color: var(--git-ui-color-untracked);
+}
+
+.status-R {
+  color: var(--git-ui-color-renamed);
+}
 
 /* Hover actions on items */
 .git-panel-item-actions {
@@ -234,7 +253,8 @@
 }
 
 .git-panel-fileItem:hover .git-panel-status {
-  display: none; /* Hide status label to fit actions on hover */
+  display: none;
+  /* Hide status label to fit actions on hover */
 }
 
 /* History styling */
@@ -299,14 +319,22 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Custom styling for embedded gitgraph SVG to avoid inner scrolling/overflow quirks */
+.git-ui-graph-wrapper {
+  padding-left: var(--git-ui-graph-padding-left, 10px);
+}
+
 .git-ui-graph-wrapper svg {
-  display: block !important;
-  overflow: hidden !important;
-  min-width: 150px !important;
-  margin-left: -14px !important;
+  display: block;
+  overflow: hidden;
+  min-width: 150px;
 }

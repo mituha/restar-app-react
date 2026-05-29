@@ -400,7 +400,7 @@ export const GitPanel: React.FC<GitPanelProps> = ({
           </div>
           {expanded.history && (
             <div className="git-panel-section-content" style={{ display: 'flex', flexDirection: 'row', minHeight: 'min-content', backgroundColor: 'var(--git-ui-bg)' }}>
-              <div style={{ flexShrink: 0, width: '24px', overflow: 'hidden' }}>
+              <div style={{ flexShrink: 0, width: 'var(--git-ui-graph-width, 40px)', overflow: 'hidden' }}>
                 <GitGraph history={history} />
               </div>
 
@@ -419,7 +419,7 @@ export const GitPanel: React.FC<GitPanelProps> = ({
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',
-                        padding: '0 8px 0 20px',
+                        padding: '0 8px 0 10px',
                         cursor: 'pointer',
                         boxSizing: 'border-box',
                         backgroundColor: isSelected ? 'var(--git-ui-item-hover)' : 'transparent',
