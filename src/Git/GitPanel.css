@@ -307,5 +307,6 @@
 .git-ui-graph-wrapper svg {
   display: block !important;
   overflow: hidden !important;
-  width: 100% !important;
+  min-width: 150px !important;
+  margin-left: -14px !important;
 }
